@@ -1,0 +1,55 @@
+<?php
+$objectManager =  \Magento\Framework\App\ObjectManager::getInstance();
+$categoryFactory = $objectManager->get('\Magento\Catalog\Model\CategoryFactory');
+$categoryHelper = $objectManager->get('\Magento\Catalog\Helper\Category');
+$categories = $categoryHelper->getStoreCategories();
+?>
+<ul>
+    <?php if (count($categories) > 0): ?>
+        <?php foreach ($categories as $category): ?>
+            <?php if ($category->getChildrenCount()): ?>
+                <li class="category-item more-sub-cat">
+                    <a href="<?php echo $this->getBaseUrl() . $category->getRequestPath() ?>"><?php echo $category->getName() ?></a>
+                </li>
+                <?php
+                $categoryId = $category->getId();
+                $category = $categoryFactory->create()->load($categoryId);
+                $childrenCategories = $category->getChildrenCategories();
+                ?>
+                <ul>
+                    <?php foreach ($childrenCategories as $categorysub): ?>
+                        <?php if ($category->getChildrenCount()): ?>
+                            <li class="category-item more-sub-cat">
+                                <a href="<?php echo $this->getBaseUrl() . $categorysub->getRequestPath() ?>"><?php echo $categorysub->getName() ?></a>
+                            </li>
+                            <?php
+                            $categorySubId = $categorysub->getId();
+                            $categorysub = $categoryFactory->create()->load($categorySubId);
+                            echo $categorysub->getProductCollection()->Count();
+                            $childrenCategoriesSub = $categorysub->getChildrenCategories();
+                            ?>
+                            <ul>
+                                <?php foreach ($childrenCategoriesSub as $categorysubs): ?>
+                                    <li class="category-item more-sub-cat">
+                                        <a href="<?php echo $this->getBaseUrl() . $categorysubs->getRequestPath() ?>"><?php echo $categorysubs->getName() ?></a>
+                                    </li>
+                                    <?php
+                                    $categorySubsId = $categorysubs->getId();
+                                    $categorysubs = $categoryFactory->create()->load($categorySubsId);
+                                    echo $categorysubs->getProductCollection()->Count();
+                                    $childrenCategoriesCall = $categorysubs->getChildrenCategories();
+                                    ?>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+                    <?php endforeach;?>
+                </ul>
+            <?php endif;?>
+        <?php endforeach;?>
+    <?php endif;?>
+</ul>
+
+
+
+
+
